@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'user'.$i.'@szerveroldali.hu',
                 'name' => fake('hu_HU') -> name(),
                 'password' => password_hash('password', PASSWORD_DEFAULT),
-                'is_admin' => rand(1, 5) < 2
+                'admin' => rand(1, 5) < 2
             ]);
             $users -> add($user);
         }
@@ -63,8 +63,10 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $users ->where('admin','=',true)->isNotEmpty() ? ($users ->where('admin','=',true) -> random() -> id ):null,
                 'place_id'=> $places -> random() -> id,
             ]);
+            $randomEnemyId = $characters -> where('enemy','=',1) -> random() -> id;
+            $randomNotEnemyId = $characters -> where('enemy','=',0) -> random() -> id;
             $contest -> characters() -> sync(
-                [$characters -> where('enemy','=','true') -> random() -> pluck('id'),$characters -> where('enemy','=','false') -> random() -> pluck('id')]
+                [$randomEnemyId,$randomNotEnemyId]
             );
         }
 

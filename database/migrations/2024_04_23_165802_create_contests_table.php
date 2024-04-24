@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contest', function (Blueprint $table) {
+        Schema::create('contests', function (Blueprint $table) {
             $table->id();
             $table->boolean('win')->nullable();
-            $table->json('history');
+            $table->json('history')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('place_id')->constrained()->onDelete('cascade');
             $table->timestamps();

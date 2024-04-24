@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('enemy')->default(false);
             $table->integer('defence');
-            $table->integer('strenght');
+            $table->integer('strength');
             $table->integer('accuracy');
             $table->integer('magic');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');

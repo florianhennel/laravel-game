@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('contest_id')->constrained()->onDelete('cascade');
             $table->float('hero_hp')->default(20);
             $table->float('enemy_hp')->default(20);
-            $table->primary(['character_id', 'contest_id']);
         });
     }
 
