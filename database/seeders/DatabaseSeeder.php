@@ -93,9 +93,6 @@ class DatabaseSeeder extends Seeder
                 $win = true;
             }
 
-
-
-
             $contest = Contest::create([
                 'win' => $win,
                 'history' => json_encode($history),
@@ -103,7 +100,7 @@ class DatabaseSeeder extends Seeder
                 'place_id'=> $places -> random() -> id,
             ]);
             $contest -> characters() -> sync(
-                [$enemy->id => ['enemy_hp'=>$enemy->hp],$notEnemy->id =>['hero_hp'=>$notEnemy->hp]]
+                [$enemy->id => ['enemy_hp'=>$enemy->hp,'hero_hp'=>$notEnemy->hp,'created_at' => now(), 'updated_at' => now()],$notEnemy->id =>['hero_hp'=>$notEnemy->hp,'enemy_hp'=>$enemy->hp,'created_at' => now(), 'updated_at' => now()]]
             );
         }
     }

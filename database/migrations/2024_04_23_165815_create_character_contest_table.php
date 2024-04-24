@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('contest_id')->constrained()->onDelete('cascade');
             $table->float('hero_hp')->nullable();
             $table->float('enemy_hp')->nullable();
+            $table->timestamps();
         });
     }
 
