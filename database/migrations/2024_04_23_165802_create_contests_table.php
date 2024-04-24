@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('contests', function (Blueprint $table) {
             $table->id();
             $table->boolean('win')->nullable();
-            $table->json('history')->nullable();
+            $table->json('history');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('place_id')->constrained()->onDelete('cascade');
             $table->timestamps();
