@@ -16,7 +16,7 @@
                 @yield('content')
             </div>
             <div class="">
-                Sidebar.
+                Sidebars.
             </div>
         </div>
     </div>

@@ -23,25 +23,34 @@ class DatabaseSeeder extends Seeder
             $user = User::create([
                 'email' => 'user'.$i.'@szerveroldali.hu',
                 'name' => fake('hu_HU') -> name(),
-                'password' => password_hash('password', PASSWORD_DEFAULT),
+                'password' => 'password',
                 'admin' => rand(1, 5) < 2
             ]);
-            $users -> where('admin','=',1) ->count() == 0 && $user -> admin = 1;
-            $users -> where('admin','=',0) ->count() == 0 && $user -> admin = 0;
+            if($users -> where('admin','=',1) ->count() == 0) $user -> admin = 1;
+            if($users -> where('admin','=',0) ->count() == 0) $user -> admin = 0;
             $users -> add($user);
         }
         $places = collect();
-        for ($i=0; $i < 5; $i++) { 
-            $place = Place::create([
-                'name' => fake('hu_HU') -> name(),
-                'image' => fake()->image(null, 640, 480,'architecture'),
-            ]);
-            $places -> add($place);
-        }
+        $images = collect(['forest','green fields','tavern','gyongyos']);
+            for ($i=0; $i < 5; $i++) {
+                $imageName = $images[rand(1,sizeof($images))-1];
+                $city = fake('hu_HU') -> smallerCity();
+                $imageText = "'s " . $imageName;
+                if($imageName === 'gyongyos'){
+                    $city = 'Duránda (Gyöngyös)';
+                    $imageText = '';
+                    $images->pop();
+                }
+                $place = Place::create([
+                    'name' => $city . $imageText,
+                    'image' => '/images/' . $imageName .'.jpg',
+                ]);
+                $places -> add($place);
+            }
         $characters = collect();
         for ($i=0; $i < 10 ; $i++) {
             $skillpoints = 20;
-            $enemy = rand(1, 2) == 1;
+            $enemy = rand(0, 1);
             $attributes = ['defence' => 0, 'strength' => 0, 'accuracy' => 0, 'magic' => 0];
             while ($skillpoints > 0) {
                 $randomAttribute = array_rand($attributes);
@@ -56,7 +65,7 @@ class DatabaseSeeder extends Seeder
                 'strength' => $attributes['strength'],
                 'accuracy' => $attributes['accuracy'],
                 'magic' => $attributes['magic'],
-                'user_id' => $users ->where('admin','=',1)->isNotEmpty() ? ($users ->where('admin','=',1) -> random() -> id ):null,
+                'user_id' =>$users ->where('admin','=',$enemy) -> random() -> id,
             ]);
             $characters -> add($character);
         }
@@ -100,7 +109,7 @@ class DatabaseSeeder extends Seeder
                 'place_id'=> $places -> random() -> id,
             ]);
             $contest -> characters() -> sync(
-                [$enemy->id => ['enemy_hp'=>$enemy->hp,'hero_hp'=>$notEnemy->hp,'created_at' => now(), 'updated_at' => now()],$notEnemy->id =>['hero_hp'=>$notEnemy->hp,'enemy_hp'=>$enemy->hp,'created_at' => now(), 'updated_at' => now()]]
+                [$enemy->id => ['enemy_hp'=>$enemy->hp,'hero_hp'=>$notEnemy->hp],$notEnemy->id =>['hero_hp'=>$notEnemy->hp,'enemy_hp'=>$enemy->hp]]
             );
         }
     }
