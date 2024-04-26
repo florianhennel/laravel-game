@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Log;
 
 class ContestController extends Controller
 {
@@ -47,29 +48,57 @@ class ContestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contest $contest)
+    public function update(Request $request, Contest $contest,$attackType)
     {
-        $this -> authorize('update', $contest);
+        $this -> authorize('update',$contest);
+        $history = collect(json_decode($contest->history,true));
+        $hero = $contest->characters->firstWhere('enemy',0);
+        $enemy = $contest->characters->firstWhere('enemy',1);
+        $damage = $this->damageCalculator($request->attackType,$hero,$enemy);
+        $enemyHp = $contest->characters[0]->pivot->enemy_hp - $damage;
+        $history->add(sprintf("%s: %s attack - %.1f damage" ,$enemy->name,$request->attackType,$damage));
+        if ($enemyHp <=0) {
+            $enemyHp = 0;
+            $contest->win = 1;
+            $history->add(sprintf("%s killed %s " ,$hero->name,$enemy->name));
+        }else{
+            $attack_types = ['meele', 'ranged', 'special'];
+            $enemyAttackType = $attack_types[rand(0,2)];
+            $damage = $this->damageCalculator($enemyAttackType,$enemy,$hero);
+            $heroHp = $contest->characters[0]->pivot->hero_hp - $damage;
+            $history->add(sprintf("%s: %s attack - %.1f damage" ,$enemy->name,$enemyAttackType,$damage));
+            if ($heroHp <=0) {
+                $heroHp = 0;
+                $contest->win = 0;
+                $history->add(sprintf("%s killed %s " ,$enemy->name,$hero->name));
+            }
+            else{
+                $contest -> win = null;
+            }
+        }
+        $contest -> history =json_encode($history);
+        $contest -> save();
+        $contest -> characters() -> sync([$enemy->id => ['enemy_hp'=>$enemyHp,'hero_hp'=>$heroHp],$hero->id =>['hero_hp'=>$heroHp,'enemy_hp'=>$enemyHp]]); // n:n
+        return Redirect::to('/contests/'.$contest->id);
+    }
 
-        $validated = $request -> validate(
-            [
-                'title' => 'required|min:3',
-                'content' => 'required',
-                'date' => 'required|before_or_equal:' . now()->format('Y-m-d'),
-                // 'user_id' => 'required|integer|exists:users,id',
-                'cats[]' => 'array',
-                'cats.*' => 'distinct|integer|exists:tags,id'
-            ],
-            [
-                'title.required' => 'Erzsi, nincs cím!',
-                'title.min' => 'Erzsi, adj :min betűt!'
-            ]
-        ); 
-        $validated['date'] = \Carbon\Carbon::parse($validated['date']);
-        $contest -> update($validated);
-        $contest -> tags() -> sync($validated['cats'] ?? []); // n:n
-        Session::flash('post-updated', $validated['title']);
-        return redirect() -> route('posts.index');
+    private function damageCalculator($attackType,$ATT,$DEF){
+        $damage = 0;
+        switch ($attackType) {
+            case 'meele':
+                $damage = (($ATT->strength * 0.7 + $ATT->accuracy * 0.1 + $ATT->magic * 0.1) - $DEF->defence);
+                break;
+            case 'ranged':
+                $damage = (($ATT->strength * 0.1 + $ATT->accuracy * 0.7 + $ATT->magic * 0.1) - $DEF->defence);
+                break;
+            case 'special':
+                $damage = (($ATT->strength * 0.1 + $ATT->accuracy * 0.1 + $ATT->magic * 0.7) - $DEF->defence);
+                break;
+            default:
+                $damage = 0;
+                break;
+        }
+        return $damage>0?$damage:0;
     }
 
     /**

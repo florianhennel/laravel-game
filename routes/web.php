@@ -17,11 +17,8 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/characters/{character}', [CharacterController::class, 'show'])->name('characters.show');
     Route::get('/contests/{contest}', [ContestController::class, 'show'])->name('contests.show');
-
-    Route::get('/contests/{id}/{attackType}', [ContestController::class, 'update'])->name('contests.attack');
-
 });
-
+Route::get('/contests/{contest}/{attackType}', [ContestController::class, 'update'])->name('contests.attack');  
 Route::get('/characters',[CharacterController::class, 'index'])->middleware(['auth', 'verified'])->name('characters');
 
 Route::middleware('auth')->group(function () {

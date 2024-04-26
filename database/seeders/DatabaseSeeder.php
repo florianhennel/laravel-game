@@ -20,22 +20,24 @@ class DatabaseSeeder extends Seeder
     {
         $users = collect();
         for ($i=0; $i < 10; $i++) { 
+            $admin = rand(1, 5) < 2 ? 1 : 0;
+            if($users -> where('admin',1) ->count() == 0) $admin = 1;
+            if($users -> where('admin',0) ->count() == 0) $admin = 0;
             $user = User::create([
                 'email' => 'user'.$i.'@szerveroldali.hu',
                 'name' => fake('hu_HU') -> name(),
                 'password' => 'password',
-                'admin' => rand(1, 5) < 2
+                'admin' => $admin,
             ]);
-            if($users -> where('admin','=',1) ->count() == 0) $user -> admin = 1;
-            if($users -> where('admin','=',0) ->count() == 0) $user -> admin = 0;
+            
             $users -> add($user);
         }
         $places = collect();
         $images = collect(['forest','green fields','tavern','gyongyos']);
             for ($i=0; $i < 5; $i++) {
-                $imageName = $images[rand(1,sizeof($images))-1];
+                $imageName = str_replace(' ', '', $images[rand(1,sizeof($images))-1]);
                 $city = fake('hu_HU') -> smallerCity();
-                $imageText = "'s " . $imageName;
+                $imageText = "i " . $imageName;
                 if($imageName === 'gyongyos'){
                     $city = 'Duránda (Gyöngyös)';
                     $imageText = '';
@@ -65,7 +67,7 @@ class DatabaseSeeder extends Seeder
                 'strength' => $attributes['strength'],
                 'accuracy' => $attributes['accuracy'],
                 'magic' => $attributes['magic'],
-                'user_id' =>$users ->where('admin','=',$enemy) -> random() -> id,
+                'user_id' =>$users ->where('admin',$enemy) -> random() -> id,
             ]);
             $characters -> add($character);
         }
@@ -105,7 +107,7 @@ class DatabaseSeeder extends Seeder
             $contest = Contest::create([
                 'win' => $win,
                 'history' => json_encode($history),
-                'user_id' => $notEnemy -> id,
+                'user_id' => $notEnemy -> user-> id,
                 'place_id'=> $places -> random() -> id,
             ]);
             $contest -> characters() -> sync(

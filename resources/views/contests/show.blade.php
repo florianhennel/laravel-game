@@ -84,9 +84,9 @@
                 </div>
             </div>
             <div class="flex justify-around w-1/3 items-end">
-                <a class=" rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['id' => $contest->id, 'attackType' => 'melee']) }}">Melee</a>
-                <a class="rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['id' => $contest->id, 'attackType' => 'ranged']) }}">Ranged</a>
-                <a class="rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['id' => $contest->id, 'attackType' => 'special']) }}">Special</a>
+                <a class=" rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'melee']) }}">Melee</a>
+                <a class="rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'ranged']) }}">Ranged</a>
+                <a class="rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'special']) }}">Special</a>
             </div>
             <div
                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900 dark:text-gray-100 flex flex-col justify-between items-center w-1/12">

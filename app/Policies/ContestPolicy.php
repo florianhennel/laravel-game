@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\Contest;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-
+use Illuminate\Support\Facades\Log;
 
 class ContestPolicy
 {
@@ -38,7 +38,14 @@ class ContestPolicy
      */
     public function update(User $user, Contest $contest): bool
     {
-        return $user -> id == $contest -> user_id || $user -> admin;
+        foreach ($user->characters as $userCharacter) { 
+            foreach ($contest->characters as $contestCharacter) {
+                if ($userCharacter->id === $contestCharacter->id) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
