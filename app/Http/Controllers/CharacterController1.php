@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CharacterPostRequest;
 use App\Models\Character;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Models\Contest;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\Validator;
 
 class CharacterController extends Controller
 {
@@ -66,6 +70,7 @@ class CharacterController extends Controller
     public function destroy(Character $character)
     {
         $this -> authorize('delete', $character);
+        $character->contests()->detach();
         $character -> delete();
         return redirect() -> route('characters');
     }

@@ -1,2 +1,20 @@
 # laravel-game
+
 Elte backend assignment in laravel
+
+#Checklist
+
+[X] - Adatbázis és modellek 3 pont
+[X] - Seeder 3 pont
+[X] - Főoldal 2 pont
+[X] - Karakterek listázása oldal 2 pont
+[X] - Karakter részletes adatai tartalmazó oldal 2 pont
+[ ] - Új karakter létrehozása 6 pont
+[ ] - Karakter módosítása 4 pont
+[ ] - Karakter törlése 2 pont
+[ ] - Új mérkőzés létrehozása 3 pont
+[X] - Mérkőzés oldal 10 pont
+[ ] - Helyszínek listázása oldal 2 pont
+[ ] - Új helyszín létrehozása 2 pont
+[ ] - Helyszín módosítása 3 pont
+[ ] - Helyszín törlése 2 pont

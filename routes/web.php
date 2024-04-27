@@ -15,11 +15,18 @@ Route::get('/', function () {
 
 
 Route::middleware('auth')->group(function () {
+    //Characters
+    Route::get('/characters',[CharacterController::class, 'index'])->middleware(['auth', 'verified'])->name('characters');
+    Route::get('/characters/{character}/delete', [CharacterController::class, 'destroy'])->name('characters.delete');
+    Route::get('/characters/{character}/edit', [CharacterController::class, 'edit'])->name('characters.edit');
     Route::get('/characters/{character}', [CharacterController::class, 'show'])->name('characters.show');
+    Route::patch('/characters/{character}/update', [CharacterController::class, 'update'])->name('characters.update');
+    //Contests
     Route::get('/contests/{contest}', [ContestController::class, 'show'])->name('contests.show');
+    Route::get('/contests/{contest}/{attackType}', [ContestController::class, 'update'])->name('contests.attack');
+    
 });
-Route::get('/contests/{contest}/{attackType}', [ContestController::class, 'update'])->name('contests.attack');  
-Route::get('/characters',[CharacterController::class, 'index'])->middleware(['auth', 'verified'])->name('characters');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

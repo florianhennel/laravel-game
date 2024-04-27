@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Character extends Model
 {
-    use HasFactory;
+    use HasFactory; use SoftDeletes;
     
     /**
      * The attributes that are mass assignable.
@@ -29,6 +30,6 @@ class Character extends Model
     }
     public function contests()
     {
-        return $this->belongsToMany(Contest::class)->withPivot('hero_hp','enemy_hp')->withTimestamps();
+        return $this->belongsToMany(Contest::class)->withPivot('hero_hp','enemy_hp')->withTimestamps()->withTrashed();
     }
 }

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contest;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ContestController extends Controller
 {

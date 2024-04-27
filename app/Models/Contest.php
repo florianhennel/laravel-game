@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contest extends Model
 {
@@ -28,6 +29,6 @@ class Contest extends Model
     }
     public function characters()
     {
-        return $this->belongsToMany(Character::class,)->withPivot('hero_hp','enemy_hp')->withTimestamps();
+        return $this->belongsToMany(Character::class,)->withPivot('hero_hp','enemy_hp')->withTimestamps()->withTrashed();
     }
 }
