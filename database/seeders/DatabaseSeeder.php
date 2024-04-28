@@ -33,18 +33,11 @@ class DatabaseSeeder extends Seeder
             $users -> add($user);
         }
         $places = collect();
-        $images = collect(['forest','green fields','tavern','gyongyos']);
+        $images = collect(['Forest','Greenfields','Tavern','Gyongyos','City']);
             for ($i=0; $i < 5; $i++) {
-                $imageName = str_replace(' ', '', $images[rand(1,sizeof($images))-1]);
-                $city = fake('hu_HU') -> smallerCity();
-                $imageText = "i " . $imageName;
-                if($imageName === 'gyongyos'){
-                    $city = 'Duránda (Gyöngyös)';
-                    $imageText = '';
-                    $images->pop();
-                }
+                $imageName = $images->pop();
                 $place = Place::create([
-                    'name' => $city . $imageText,
+                    'name' => $imageName,
                     'image' => '/images/' . $imageName .'.jpg',
                 ]);
                 $places -> add($place);
@@ -67,7 +60,7 @@ class DatabaseSeeder extends Seeder
                 'strength' => $attributes['strength'],
                 'accuracy' => $attributes['accuracy'],
                 'magic' => $attributes['magic'],
-                'user_id' =>$users ->where('admin',$enemy) -> random() -> id,
+                'user_id' => $users ->where('admin',$enemy) -> random() -> id,
             ]);
             $characters -> add($character);
         }

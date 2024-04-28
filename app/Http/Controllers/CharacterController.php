@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CharacterPostRequest;
 use App\Models\Character;
+use Illuminate\Auth\Events\Validated;
+use Illuminate\Database\Schema\ForeignKeyDefinition;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +19,7 @@ class CharacterController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny',Character::class);
         $user = Auth::user();
         $characters = $user->characters -> sortByDesc('created_at');
         return view("characters.index", ['characters' => $characters]);
@@ -25,16 +28,25 @@ class CharacterController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CharacterPostRequest $request)
     {
-        //
-    }
+        $this ->authorize('create',Character::class);
 
+        $validated = $request->validated();
+        $validated['enemy']=$request->has('enemy');
+        $validated['user_id'] =Auth::id();
+
+        Character::create($validated);
+
+        return redirect()->route('characters');
+
+    }
     /**
      * Display the specified resource.
      */
     public function show(Character $character)
     {
+        $this->authorize('view',$character);
         $user = Auth::user();
         if ($character -> user_id == $user->id) {
             $contests = $character->contests()->get();
@@ -53,7 +65,6 @@ class CharacterController extends Controller
 
         $validated = $request->validated();
 
-        $validated['enemy']=$character->enemy;
         $character -> update($validated);
 
         return redirect() -> route('characters.show',['character' => $character]);
@@ -73,11 +84,14 @@ class CharacterController extends Controller
     public function edit(Character $character)
     {
         $this -> authorize('update',$character);
-        $user = Auth::user();
-        if ($character -> user_id == $user->id) {
-            return view('characters.edit',['character' =>$character]);
-        }else{
-            return Redirect::to('/characters');
-        }
+        
+        return view('characters.edit',['character' =>$character,'isAdmin'=>Auth::user()->admin]);
+    }
+    
+    public function create()
+    {
+        $this ->authorize('create',Character::class);
+
+        return view('characters.create',['isAdmin'=>Auth::user()->admin]);
     }
 }

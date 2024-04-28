@@ -13,7 +13,7 @@ class CharacterPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user !==null;
     }
 
     /**
@@ -21,7 +21,7 @@ class CharacterPolicy
      */
     public function view(User $user, Character $character): bool
     {
-        //
+        return $user->id===$character->user_id;
     }
 
     /**
@@ -29,7 +29,7 @@ class CharacterPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user !== null;
     }
 
     /**
@@ -63,7 +63,7 @@ class CharacterPolicy
      */
     public function restore(User $user, Character $character): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -71,6 +71,6 @@ class CharacterPolicy
      */
     public function forceDelete(User $user, Character $character): bool
     {
-        //
+        return true;
     }
 }

@@ -14,7 +14,7 @@ class ContestPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user!== null;
     }
 
     /**
@@ -22,7 +22,12 @@ class ContestPolicy
      */
     public function view(User $user, Contest $contest): bool
     {
-        //
+        foreach ($contest->characters as $contestCharacter) {
+            if ($user->id === $contestCharacter->user_id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -30,7 +35,7 @@ class ContestPolicy
      */
     public function create(User $user): bool
     {
-        return $user !== null;
+        return $user != null;
     }
 
     /**
@@ -38,11 +43,9 @@ class ContestPolicy
      */
     public function update(User $user, Contest $contest): bool
     {
-        foreach ($user->characters as $userCharacter) { 
-            foreach ($contest->characters as $contestCharacter) {
-                if ($userCharacter->id === $contestCharacter->id) {
+        foreach ($contest->characters as $contestCharacter) {
+            if ($user->id === $contestCharacter->user_id && $user->admin === 0) {
                     return true;
-                }
             }
         }
         return false;

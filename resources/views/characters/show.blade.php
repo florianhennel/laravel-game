@@ -19,16 +19,26 @@
                     <i class="fas fa-bullseye"></i>
                     {{ $character->accuracy }}
                 </div>
-                <div style="width: 200px; user-select:none;">
+                <div style="user-select:none;">
                     <i class="fas fa-magic"></i>
                     {{ $character->magic }}
                 </div>
-                <a href="{{ route('characters.edit', ['character' => $character]) }}">
-                    <i class="fas fa-pen"></i>
-                </a>
-                <a href="{{ route('characters.delete', ['character' => $character]) }}">
-                    <i class="fas fa-trash"></i>
-                </a>
+                @can('update', $character)
+                    <a href="{{ route('characters.edit', ['character' => $character]) }}">
+                        <i class="fas fa-pen"></i>
+                    </a>
+                @endcan
+                @can('delete', $character)
+                <form action="{{ route('characters.delete', ['character' => $character]) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <a href="#" onclick="this.closest('form').submit()">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </form>
+                    
+                @endcan
+                
 
             </div>
 
@@ -71,28 +81,17 @@
                 <a href="{{ route('contests.show', ['contest' => $c]) }}"><i class="fas fa-arrow-right"></i></a>
             </div>
         @endforeach
+        <form action="{{ route('contests.new',['character'=>$character]) }}" method="POST" class="bg-white dark:bg-gray-800 w-fit p-6 text-white shadow-sm sm:rounded-lg">
+            @csrf
+            @method('POST')
+            
+            <a href="#" onclick="this.closest('form').submit()" class="bg-white dark:bg-gray-800 w-fit">
+                <i class="fas fa-plus"></i>
+            </a>
+        </form>
     </div>
 @endsection
 
 @section('title')
     Characters -> {{ $character->name }}
-@endsection
-@section('contentt')
-    <div class="flex flex-col text-white w-1/2">
-        <div class="flex items-center justify-between w-full">
-            <div class="w-1/4">aaa</div>
-            <div class="mx-2">:</div>
-            <div class="w-1/4">aaaaaaaaaaaaaaaaaaaaaa</div>
-        </div>
-        <div class="flex items-center justify-between w-full">
-            <div class="w-1/4">aaaaaaaaaaaaaaa</div>
-            <div class="mx-2">:</div>
-            <div class="w-1/4">aa</div>
-        </div>
-        <div class="flex items-center justify-between w-full">
-            <div class="w-1/4">aaaaaa</div>
-            <div class="mx-2">:</div>
-            <div class="w-1/4">aaaaaaa</div>
-        </div>
-    </div>
 @endsection

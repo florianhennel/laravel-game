@@ -38,7 +38,7 @@ class CharacterPostRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Erzsi, nincsen név!',
+            'required' => 'Ez a mező nem lehet üres!',
             'name.min' => 'Erzsi, adj :min betűt!',
             'max' => 'Ez az érték maximum :max kell legyen.',
             'min' => 'Ez az érték minimum :min lehet.',
@@ -53,10 +53,10 @@ class CharacterPostRequest extends FormRequest
         return [
             function (Validator $validator) {
                 $total = (int) $this->input('defence') + (int) $this->input('strength') + (int) $this->input('accuracy') + (int) $this->input('magic');
-                if ($total > 20) {
+                if ($total != 20) {
                     $validator->errors()->add(
                         'total',
-                        'Maximum 20 pontot oszthatsz ki egy karakternek!'
+                        '20 pontot kell kiosztani egy karakternek!'
                     );
                 }
             }

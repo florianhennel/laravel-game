@@ -28,6 +28,9 @@
                 
             </div>
         @endforeach
+        <a href="{{ route('characters.create') }}" class="bg-white dark:bg-gray-800 w-fit p-6 text-white shadow-sm sm:rounded-lg">
+            <i class="fas fa-plus"></i>
+        </a>
     </div>
 @endsection
 @section('title')

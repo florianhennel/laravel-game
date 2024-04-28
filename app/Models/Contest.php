@@ -17,6 +17,8 @@ class Contest extends Model
     protected $fillable = [
         'win',
         'history',
+        'user_id',
+        'place_id',
     ];
 
     public function user()

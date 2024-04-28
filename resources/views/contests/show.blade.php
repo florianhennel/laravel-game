@@ -1,3 +1,8 @@
+@php
+    $jsonString = '{"key": "value"}'; // Your JSON string
+    $array = json_decode($contest->history, true); // Decode JSON string into an array
+@endphp
+
 @extends('dashboard')
 @section('content')
     <div class=" h-full rounded-lg w-full bg-no-repeat bg-cover bg-center flex flex-col gap-3"
@@ -83,10 +88,28 @@
                     {{ $contest->characters[0]->magic }}
                 </div>
             </div>
-            <div class="flex justify-around w-1/3 items-end">
-                <a class=" rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'melee']) }}">Melee</a>
-                <a class="rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'ranged']) }}">Ranged</a>
-                <a class="rounded bg-slate-400 text-white p-4" href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'special']) }}">Special</a>
+            <div class="flex flex-col h-4/5 justify-between items-center w-1/2">
+                <div class="flex flex-col gap-1 p-2 h-4/5 w-full items-center justify-center overflow-auto ">
+                    @foreach ($array as $item)
+                        <div
+                            class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg flex items-center justify-start h-1/12">
+                            <div class="p-6 text-gray-900 dark:text-gray-100 flex justify-between">
+                                <div style="font-family:'Pacifico', cursive; font-weight:900;font-style:italic;">
+                                    {{ $item }}</div>
+                            </div>
+
+                        </div>
+                    @endforeach
+                </div>
+                <div class=" flex justify-between items-end w-full">
+                    <a class=" {{ $contest->win !== null || Auth::user()->admin === 1 ? ' hidden' : 'visible' }} rounded bg-slate-400 text-white p-4"
+                        href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'melee']) }}">Melee</a>
+                    <a class=" {{ $contest->win !== null || Auth::user()->admin === 1 ? ' hidden' : 'visible' }} rounded bg-slate-400 text-white p-4"
+                        href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'ranged']) }}">Ranged</a>
+                    <a class=" {{ $contest->win !== null || Auth::user()->admin === 1 ? ' hidden' : 'visible' }} rounded bg-slate-400 text-white p-4"
+                        href="{{ route('contests.attack', ['contest' => $contest->id, 'attackType' => 'special']) }}">Special</a>
+                </div>
+
             </div>
             <div
                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900 dark:text-gray-100 flex flex-col justify-between items-center w-1/12">

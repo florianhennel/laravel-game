@@ -22,6 +22,7 @@ class Character extends Model
         'strength',
         'accuracy',
         'magic',
+        'user_id',
     ];
 
     public function user()

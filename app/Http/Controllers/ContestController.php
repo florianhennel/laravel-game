@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Character;
 use App\Models\Contest;
+use App\Models\Place;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +18,7 @@ class ContestController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny',Contest::class);
         $contests = Contest::with('user') -> get() -> sortByDesc('created_at');
         return view("contests.index", ['contests' => $contests]);
     }
@@ -23,9 +26,18 @@ class ContestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request,$character)
     {
-        //
+        $this -> authorize('create',Contest::class);
+        $character = Character::findOrFail($character);
+        $enemy = Character::all()->where('enemy',$character->enemy===1?0:1)->random();
+        $win = null;
+        $history = json_encode(collect());
+        $place_id = Place::all() ->random()->id;
+        $contest = Contest::create(['win'=>$win,'history'=>$history,'place_id'=>$place_id,'user_id'=>$character->user_id]);
+        $contest -> characters() -> sync([$enemy->id => ['enemy_hp'=>20,'hero_hp'=> 20],$character->id =>['hero_hp'=>20,'enemy_hp'=>20]]);
+
+        return redirect() -> route('contests.show',['contest'=>$contest]);
     }
 
     /**
@@ -33,6 +45,7 @@ class ContestController extends Controller
      */
     public function show(Contest $contest)
     {
+        $this->authorize('view',$contest);
         $access = $contest->characters->some(function ($character){
             return $character -> user_id === Auth::user() -> id;
         });
@@ -50,11 +63,12 @@ class ContestController extends Controller
     {
         $this -> authorize('update',$contest);
         $history = collect(json_decode($contest->history,true));
-        $hero = $contest->characters->firstWhere('enemy',0);
+        $hero = $contest->characters->where('enemy',0)->first();
         $enemy = $contest->characters->firstWhere('enemy',1);
         $damage = $this->damageCalculator($request->attackType,$hero,$enemy);
         $enemyHp = $contest->characters[0]->pivot->enemy_hp - $damage;
-        $history->add(sprintf("%s: %s attack - %.1f damage" ,$enemy->name,$request->attackType,$damage));
+        $heroHp = $contest->characters[0]->pivot->hero_hp;
+        $history->add(sprintf("%s: %s attack - %.1f damage" ,$hero->name,$request->attackType,$damage));
         if ($enemyHp <=0) {
             $enemyHp = 0;
             $contest->win = 1;
@@ -82,6 +96,7 @@ class ContestController extends Controller
 
     private function damageCalculator($attackType,$ATT,$DEF){
         $damage = 0;
+        
         switch ($attackType) {
             case 'meele':
                 $damage = (($ATT->strength * 0.7 + $ATT->accuracy * 0.1 + $ATT->magic * 0.1) - $DEF->defence);
